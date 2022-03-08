@@ -1,0 +1,28 @@
+#paper {
+    width: 40%;
+    height: 100%;
+    /* border: 1px solid black; */
+    box-shadow: 1px 1px 5px;
+    padding-top: 5px;
+
+    margin: auto;
+    margin-top: 10px;
+    
+
+}
+
+
+#content{ 
+    background: repeating-linear-gradient(
+    white, white 25px,
+    #9198e5 26px, #9198e5 27px
+    );
+    height: 70vh;
+}
+
+#paper header {
+ height: 40px;
+ background: linear-gradient(
+  white, white 36px,
+  pink 38px, pink 40px);
+}
