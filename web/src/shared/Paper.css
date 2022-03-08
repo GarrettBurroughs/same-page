@@ -7,9 +7,9 @@
 
     margin: auto;
     margin-top: 10px;
-    
-
 }
+
+
 
 
 #content{ 
@@ -18,6 +18,17 @@
     #9198e5 26px, #9198e5 27px
     );
     height: 70vh;
+}
+#paper p {
+    margin: 0;
+    padding-top: 0px;
+}
+#paper h2 {
+    margin-bottom: 5px;
+}
+
+#paper #first-guess {
+    margin-bottom: 22px;
 }
 
 #paper header {

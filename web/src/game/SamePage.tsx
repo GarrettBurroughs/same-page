@@ -24,7 +24,7 @@ const SamePage: React.FunctionComponent<SamePageProps> = () => {
     const [yourWords, setYourWords] = React.useState<string[]>([]);
     const [theirWords, setTheirWords] = React.useState<string[]>([]);
     const [guess, setGuess] = React.useState('');
-    const [won, setWon] = React.useState(true);
+    const [won, setWon] = React.useState(false);
 
     React.useEffect(() => {
         const newSocket = io(`http://${window.location.hostname}:3001`);
@@ -107,13 +107,12 @@ const SamePage: React.FunctionComponent<SamePageProps> = () => {
                 :
                 <></>
             }
-            {/* <header><h1>Same Page</h1></header> */}
 
             {opponent ? <>
-                {/* See if you and <span>{opponent?.username}</span> can get on the same page */}
                 <Paper title={<h1>Same Page</h1>}>
-                    {yourWords.length === 0 ?
-                        <h2>Think of a word...</h2>
+                    {yourWords.length === 0 ? <>
+                        <h2 id="first-guess">Think of a word...</h2>
+                    </>
                         :
                         <div id="word-box">
                             <div>
@@ -122,9 +121,7 @@ const SamePage: React.FunctionComponent<SamePageProps> = () => {
                                     text={word}
                                     key={idx}
                                     color={yourWords[idx] === theirWords[idx] ? 'green' : undefined}
-                                    doneWriting={() => {
-                                        setWon(yourWords[idx] === theirWords[idx]);
-                                    }}
+
                                 />)}
                             </div>
                             <div>
@@ -133,14 +130,21 @@ const SamePage: React.FunctionComponent<SamePageProps> = () => {
                                     text={word}
                                     key={idx}
                                     color={yourWords[idx] === theirWords[idx] ? 'green' : undefined}
+                                    doneWriting={() => {
+                                        console.log('done writing');
+                                        console.log(yourWords[idx], theirWords)
+                                        setWon(yourWords[idx] === theirWords[idx]);
+                                    }}
                                 />)}
                             </div>
                         </div>
                     }
                     {
                         canGuess ? <>
-                            <input ref={inputRef}></input>
-                            <button onClick={handleSumbit}>Go!</button>
+                            <div>
+                                <input ref={inputRef}></input>
+                                <button onClick={handleSumbit}>Go!</button>
+                            </div>
                         </>
                             :
                             <>
@@ -154,7 +158,8 @@ const SamePage: React.FunctionComponent<SamePageProps> = () => {
 
             </>
                 :
-                <h3>Finding opponent <Waiting speed={500} /></h3>
+                <Paper title={<h1>Same Page</h1>}> <h3> Waiting for Opponent <Waiting speed={500} /> </h3> </Paper>
+
             }
         </div>
     )

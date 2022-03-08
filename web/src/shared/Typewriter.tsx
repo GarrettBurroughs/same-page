@@ -12,10 +12,12 @@ const Typewriter: React.FunctionComponent<TypewriterProps> = ({ text, color, don
         for (let i = 0; i <= text.length; i++) {
             setTimeout(() => {
                 setDisplayedText(text.substring(0, i));
+            }, i * 100);
+            setTimeout(() => {
                 if (i === text.length) {
                     doneWriting!();
                 }
-            }, i * 100);
+            }, (text.length) * 100 + 500)
         }
     }, [text])
     return (
