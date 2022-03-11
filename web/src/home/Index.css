@@ -1,0 +1,16 @@
+#word-box div {
+    display: inline-block;
+    width: 200px;
+}
+
+#word-box p {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 24px;
+    font-weight: bold;
+    color: rgb(53, 44, 31);
+}
+
+ul, ol{
+    width: 80%;
+    margin: auto;
+}

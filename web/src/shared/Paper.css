@@ -8,6 +8,23 @@
     margin: auto;
     margin-top: 10px;
 }
+#paper button, input {
+    height: 25px;
+    margin-top: 1px;
+    margin-bottom: 1px;
+    line-height: normal;
+}
+
+
+@media only screen and (max-width: 1000px) {
+    #paper {
+        width: 80%;
+    }
+}
+
+#content * {
+    line-height: 27px;
+}
 
 
 
@@ -23,12 +40,24 @@
     margin: 0;
     padding-top: 0px;
 }
-#paper h2 {
-    margin-bottom: 5px;
+
+#paper h1, h2{
+    margin-top: 27px;
+    margin-bottom: 27px;
 }
 
-#paper #first-guess {
-    margin-bottom: 22px;
+#paper h3, h4, h5, h6 {
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+#paper ol, ul {
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+#paper br {
+    height: 27px;
 }
 
 #paper header {

@@ -5,10 +5,18 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import SamePage from './game/SamePage';
 import Game from './game/Game';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import Index from './home/Index';
 
 ReactDOM.render(
   <React.StrictMode>
-    <Game />
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Index />} />
+        <Route path="/home" element={<Index />} />
+        <Route path="/game" element={<Game />} />
+      </Routes>
+    </BrowserRouter>
   </React.StrictMode>,
   document.getElementById('root')
 );

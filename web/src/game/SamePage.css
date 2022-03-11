@@ -14,14 +14,6 @@ div {
     color: rgb(53, 44, 31);
 }
 
-#guess {
-    margin: auto;
-    padding: 0px;
-    margin-bottom: 10px;
-    /* border-radius: 30px; */
-    width: 140px;
-    /* border: 1px solid black; */
-}
 
 #guess span {
     font-weight: bold;
