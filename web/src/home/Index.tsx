@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import Modal from '../shared/Modal';
 import Paper from '../shared/Paper';
 
 require('./Index.css');
@@ -7,17 +8,61 @@ require('./Index.css');
 interface IndexProps { }
 
 const Index: React.FunctionComponent<IndexProps> = ({ }) => {
-    const naviage = useNavigate();
+    const [showModal, setShowModal] = React.useState(false);
+    const [createGame, setCreateGame] = React.useState(false);
+    const [roomCode, setRoomCode] = React.useState('');
+    const [enteredRoomCode, setEnteredRoomCode] = React.useState('');
 
-    const handleStartClick: React.MouseEventHandler = (e) => {
-        naviage('/game');
-    }
+    const navigate = useNavigate();
 
-    const handleFriendsClick: React.MouseEventHandler = (e) => {
-        alert('Games with friends are not currently supported'); // TODO: Implement game with friends
-    }
+    React.useEffect(() => {
+        fetch(`http://${window.location.hostname}:3001/genRoomCode`).then(res => res.json()).then(data => setRoomCode(data.roomCode));
+    }, [createGame]);
+
+    const handleStartClick: React.MouseEventHandler = (e) => { navigate('/game'); }
+
+    const handleFriendsClick: React.MouseEventHandler = async (e) => { setShowModal(true); }
+
+    const handleStartGame: React.MouseEventHandler = (e) => { navigate(`/game/${roomCode}`); }
+
+    const handleCreateGame: React.MouseEventHandler = (e) => { setCreateGame(true); }
+
+    const closeModal: React.MouseEventHandler = async (e) => { setShowModal(false); }
+
+    const handleJoinGame: React.MouseEventHandler = (e) => { navigate(`/game/${enteredRoomCode}`); }
+    
+
+
     return (
         <div>
+            {showModal ? <Modal width={400} height={300}>
+                {
+                    createGame && roomCode !== '' ? <>
+                        <h2>Room Code: {roomCode}</h2>
+                        Send this code to your friend, or have them to to this url: <br />
+                        <a href={`http://${window.location.hostname}:3000/game/${roomCode}`}>{`http://${window.location.hostname}:3000/game/${roomCode}`}</a>
+                        <br />
+                        <br />
+                        <button onClick={handleStartGame}>Start!</button>
+                    </> : <>
+                            <h2>Games With Friends</h2>
+                            <button onClick={handleCreateGame}> Create Game </button>
+                            <br />
+                            or
+                            <br />
+                            Enter room code:
+                            <br />
+                            <input onChange={(e) => {setEnteredRoomCode(e.target.value)}} />
+                            <br />
+                            <button onClick={handleJoinGame}>Join Game</button>
+                            <br />
+                            <br />
+                            <br />
+                            <br />
+                            <button onClick={closeModal}>close</button>
+                    </>
+                }
+            </Modal> : <></>}
             <h1>
                 Same Page
             </h1>

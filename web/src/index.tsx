@@ -14,7 +14,9 @@ ReactDOM.render(
       <Routes>
         <Route path="/" element={<Index />} />
         <Route path="/home" element={<Index />} />
+        <Route path="/game/:id" element={<Game />} />
         <Route path="/game" element={<Game />} />
+
       </Routes>
     </BrowserRouter>
   </React.StrictMode>,

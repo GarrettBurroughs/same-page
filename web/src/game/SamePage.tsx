@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import io, { Socket } from 'socket.io-client';
 import Modal from '../shared/Modal';
 import Paper from '../shared/Paper';
@@ -25,6 +26,9 @@ const SamePage: React.FunctionComponent<SamePageProps> = () => {
     const [theirWords, setTheirWords] = React.useState<string[]>([]);
     const [guess, setGuess] = React.useState('');
     const [won, setWon] = React.useState(false);
+    const navigate = useNavigate();
+
+    const { id } = useParams();
 
     React.useEffect(() => {
         const newSocket = io(`http://${window.location.hostname}:3001`);
@@ -35,14 +39,18 @@ const SamePage: React.FunctionComponent<SamePageProps> = () => {
     }, []);
 
     React.useEffect(() => {
+        socket?.on('init', () => {
+            socket.emit('getUUID');
+        });
 
         socket?.on('uuid', uuid => {
             const playerSetup = {
                 username: 'Test Player',
                 uuid: uuid
             };
-            setPlayer(playerSetup)
-            socket.emit('join', playerSetup)
+            setPlayer(playerSetup);
+            console.log(id);
+            socket.emit('join', { player: playerSetup, roomCode: id });
         });
 
         socket?.on('playerDisconnect', () => {
@@ -71,10 +79,14 @@ const SamePage: React.FunctionComponent<SamePageProps> = () => {
                 setTheirWords([...theirWords, opponentGuess]);
                 setCanGuess(true);
             }
-        })
+        });
+
+        socket?.on('roomerror', (msg) => {
+            alert(msg);
+        });
 
         return () => {
-            const listeners = ['uuid', 'playerDisconnect', 'start', 'joinedRoom', 'finalGuesses']
+            const listeners = ['init', 'uuid', 'playerDisconnect', 'start', 'joinedRoom', 'finalGuesses', 'error', ]
             listeners.forEach((listener) => socket?.off(listener));
         }
     }, [socket, player, opponent, yourWords, theirWords]);
@@ -95,13 +107,19 @@ const SamePage: React.FunctionComponent<SamePageProps> = () => {
 
     return (
         <div>
+            {id ? <p>Room Code: {id}</p> : <></>}
             {won ?
                 <Modal width={300} height={200}>
                     <h1>You won!</h1>
                     <p>both you and your opponent were on the same page about <span id='final-guess'>{yourWords[yourWords.length - 1]} </span></p>
                     <button onClick={() => {
                         setWon(false);
+                        window.location.reload();
                     }}> Play Again! </button>
+
+                    <br />
+                    <br />
+                    <button onClick={() => {navigate('/')}}>Home</button>
 
                 </Modal>
                 :

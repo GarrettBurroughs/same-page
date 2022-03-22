@@ -21,6 +21,7 @@ interface Player {
 
 interface Room {
     roomId: string,
+    isPrivate: boolean, 
     players: {
         [key: string]: {
             player: Player,
@@ -30,39 +31,83 @@ interface Room {
 }
 
 const openRooms: string[] = [];
-
 const rooms: { [key: string]: Room } = {};
+
 
 io.on('connection', (socket) => {
     console.log('a user connected');
-    socket.emit('uuid', crypto.randomBytes(16).toString('hex'));
+    socket.emit('init');
+    socket.on('getUUID', () => {
+        socket.emit('uuid', crypto.randomBytes(4).toString('hex'));
+    });
 
-    socket.on('join', (player) => {
+    socket.on('join', ({ player, roomCode }: {player: Player, roomCode?: string}) => {
         console.log(openRooms);
         if (!player) return;
-        console.log(`${player.uuid} : ${player.username} is starting a game`);
+        console.log(`${player.uuid} : ${player.username} is attempting to join a game`);
+
         let room: string = '';
         let start = false;
-        if (openRooms.length > 0) {
-            room = openRooms.shift()!;
-            start = true;
+
+        
+        if (roomCode) { // The user is attempting to join a private room
+            console.log("Creating custom room: " + roomCode)
+            if (rooms[roomCode]) { // check if the room has been created yet
+                let players = rooms[roomCode].players;
+                let numPlayers = Object.keys(players).length;
+
+                if (!rooms[roomCode].isPrivate) {
+                    socket.emit('roomerror', 'Invalid Room Code');
+                    return;
+                }
+
+                if (numPlayers >= 2) {
+                    socket.emit('roomerror', 'Room is full!');
+                    return;
+                }
+                
+
+                if (numPlayers === 1) {
+                    room = roomCode;
+                    start = true;
+                    
+                } else {
+                    room = roomCode;
+                }
+
+            } else {
+                rooms[roomCode] = {
+                    roomId: roomCode,
+                    isPrivate: true,
+                    players: {}
+                };
+                room = roomCode;
+                console.log("Created Room");
+            }
         } else {
-            room = crypto.randomBytes(16).toString('hex');
-            openRooms.push(room);
-            rooms[room] = {
-                roomId: room,
-                players: {}
-            };
+            if (openRooms.length > 0) {
+                room = openRooms.shift()!;
+                start = true;
+            } else {
+                room = crypto.randomBytes(4).toString('hex');
+                openRooms.push(room);
+                rooms[room] = {
+                    roomId: room,
+                    isPrivate: false,
+                    players: {}
+                };
+            }
         }
 
         rooms[room].players[player.uuid] = {
             player: player,
         };
+
         socket.join(room);
         socket.emit('joinedRoom', room);
         if (start) {
             console.log('starting game');
-            const players = [];
+            const players: Player[] = [];
             for (const player in rooms[room].players) {
                 players.push(rooms[room].players[player].player);
             }
@@ -76,14 +121,12 @@ io.on('connection', (socket) => {
             }
             rooms[room].players[player.uuid].currentGuess = guess;
             let allGuessed = true;
-            console.log(rooms[room].players);
             for (let player in rooms[room].players) {
                 if (!rooms[room].players[player].currentGuess) {
                     allGuessed = false;
                 }
             }
             if (allGuessed) {
-                console.log('Sending Guesses');
                 io.to(room).emit('finalGuesses', rooms[room].players);
                 for (let player in rooms[room].players) {
                     rooms[room].players[player].currentGuess = undefined
@@ -95,7 +138,18 @@ io.on('connection', (socket) => {
         socket.on('disconnect', () => {
             console.log(`${player.uuid} disconnected`);
 
+            if (!rooms[room]) return;
 
+
+            if (rooms[room].isPrivate) {
+                delete rooms[room].players[player.uuid];
+                if (Object.keys(rooms[room].players).length === 0) {
+                    delete rooms[room];
+                } else {
+                    io.to(room).emit('playerDisconnect');
+                }
+                return; 
+            }
             const idx = openRooms.indexOf(room);
             if (idx > -1) {
                 openRooms.splice(idx);
@@ -109,6 +163,13 @@ io.on('connection', (socket) => {
     });
 });
 
+app.get('/genRoomCode', (req, res) => {
+    const roomCode = crypto.randomBytes(4).toString('hex');
+
+    res.send({
+        roomCode: roomCode
+    })
+})
 
 
 server.listen(3001, () => {
