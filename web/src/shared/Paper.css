@@ -34,7 +34,8 @@
     white, white 25px,
     #9198e5 26px, #9198e5 27px
     );
-    height: 70vh;
+    min-height: 70vh;
+    padding-bottom: 27px;
 }
 #paper p {
     margin: 0;
@@ -43,7 +44,7 @@
 
 #paper h1, h2{
     margin-top: 27px;
-    margin-bottom: 27px;
+    margin-bottom: 0px;
 }
 
 #paper h3, h4, h5, h6 {
@@ -61,8 +62,8 @@
 }
 
 #paper header {
- height: 40px;
+ height: max(40px, 100%);
  background: linear-gradient(
-  white, white 36px,
-  pink 38px, pink 40px);
+  white, white 95%,
+  pink 97%, pink 100%);
 }
