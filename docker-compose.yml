@@ -1,0 +1,9 @@
+services:
+  web:
+    build: ./web
+    ports:
+      - "80:8080"
+  server:
+    build: ./server
+    ports:
+      - "3001:3001"
