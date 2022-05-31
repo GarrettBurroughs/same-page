@@ -5,6 +5,8 @@ import crypto from 'node:crypto';
 import { Server } from 'socket.io';
 
 const app = express();
+const PORT = process.env.PORT || 3001;
+
 app.use(cors());
 const server = http.createServer(app);
 const io = new Server(server, {
@@ -172,8 +174,8 @@ app.get('/genRoomCode', (req, res) => {
 })
 
 
-server.listen(3001, () => {
-    console.log('Listening on port 3001')
+server.listen(PORT, () => {
+    console.log(`Listening on port ${PORT}`)
 });
 
 
