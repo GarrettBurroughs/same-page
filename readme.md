@@ -1,5 +1,7 @@
 # Same Page
 
+Hosted at: http://samepage.garrettburroughs.com/
+
 A browser based game where you try to be on the same page as your partner
 
 ## How to play
